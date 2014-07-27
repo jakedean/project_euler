@@ -1,0 +1,1 @@
+This is a repo with solutions to Project Euler questions in JS and Python.  I will try to write some solutions in a functional style and others in an OO style.
