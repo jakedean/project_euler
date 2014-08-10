@@ -2,7 +2,8 @@
 // library offers.  I will be using this library to solve some of the Project Euler 
 // problems and just for JS development in general.  This library is split up into 
 // sections on collections, arrays, functions and objects.  I have not added all of the
-// functions from the underscore.js library, just the ones I thought I would use.
+// functions from the underscore.js library, just the ones I thought I would use.  i am 
+// using module.exports so this can be used as a node.js module.
 
 // Create a scope here for the library
 (function() {
@@ -54,6 +55,19 @@
       returnValue = iteratorFunction.apply(iteratorFunction, [returnValue, originalObject[index]]);
     }
     return returnValue;
+  }
+
+  /**
+   * Return the sum of the numbers in an array.
+   * @param  {array}  The array of numbers we want to sum.
+   * @return {number} The sum of the numbers in the array.
+   */
+  function sum (arrayOfNumbers) {
+    var sumFunction = function (currentSum, currentValue) {
+          return (currentSum + currentValue);
+        },
+        returnSum = reduce(arrayOfNumbers, sumFunction, 0);
+    return returnSum;
   }
 
   /**
@@ -205,6 +219,15 @@
    	return Array.prototype.slice.call(argumentsObject);
    }
 
+   /**
+    * This will turn a number that is in string form to a number.
+    * @param  {string} A number that is in a string form.
+    * @return {number} A number.
+    */
+   function toNumber(numberToConvert) {
+    return parseInt(numberToConvert);
+   }
+
 
    // ===============  Array Section ==================
 
@@ -265,6 +288,41 @@
    }
 
    /**
+    * Return just the unique values in an array.
+    * @param  {array} The array we want to return the unique values from.
+    * @param  {bool}  True if you want a sorted array, false if not.
+    * @param  {bool}  True if the arrays are numbers, we will conver to numbers 
+    *                 for the compare to make sure we are not comparing strings.
+    * @return {array} A copy of the array passed in with only the unique values.
+    */
+   function unique (arrayToProcess, sort, areNumberArrays) {
+    var returnArray = [];
+    each(arrayToProcess, function (value) {
+      if (returnArray.indexOf(value) === -1) {
+        returnArray.push(value);
+      }
+    });
+    if (areNumberArrays) {
+      // Convert string to int here in this compare function.
+      var strToIntCompareFunction = function (a, b) {
+        var intA = parseInt(a),
+            intB = parseInt(b);
+        // Do the comparison here.
+        if (intA < intB) {
+          return -1;
+        } else if (intA > intB) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+      return (sort) ? returnArray.sort(strToIntCompareFunction): returnArray; 
+    } else {
+      return (sort) ? returnArray.sort(): returnArray;
+    }
+   }
+
+   /**
     * This function will return an array without the values in the array contained in the second param.
     * @param {array} inputArray      The array we will look to take things out of.
     * @param {array} valuesToExclude The array of values we will look to exclude.
@@ -291,7 +349,7 @@
   	var start = start || 0,
   	    step = step || 1,
         returnArray = [];
-  	for (var i = start; i < stop; i += step) {
+  	for (var i = start; i <= stop; i += step) {
   		returnArray.push(i);
   	}
   	return returnArray;
@@ -447,7 +505,7 @@
   function pick (objectToPickFrom /* args */) {
     var keysToPick = toArray(arguments).slice(1),
         finalObject = {},
-        pickerFunction (value, index) {
+        pickerFunction = function (value, index) {
           if (keysToPick.indexOf(value) !== -1) {
             finalObject[index] = value;
           }
@@ -464,7 +522,7 @@
   function omit (objectToOmitFrom) {
     var keysToOmit = toArray(arguments).slice(1),
         finalObject = {},
-        omitterFunction (value, index) {
+        omitterFunction = function (value, index) {
           if (keysToOmit.indexOf(value) === -1) {
             finalObject[index] = value;
           }
@@ -594,6 +652,7 @@
     'each'               : each,
     'map'                : map,
     'reduce'             : reduce,
+    'sum'                : sum,
     'where'              : where,
     'reject'             : reject,
     'pluck'              : pluck,
@@ -601,9 +660,11 @@
     'times'              : times,
     'partialApplication' : partialApplication,
     'toArray'            : toArray,
+    'toNumber'           : toNumber,
     'first'              : first,
     'last'               : last,
     'flatten'            : flatten,
+    'unique'             : unique,
     'without'            : without,
     'range'              : range,
     'arrayToObject'      : arrayToObject,
@@ -628,7 +689,7 @@
     'mixin'              : mixin
   };
 
-  // Return the API here
-  return returnObject;
+  // Return the API here so it can be required in as a node.js module.
+  module.exports = returnObject;
 
 }());
