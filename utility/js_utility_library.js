@@ -317,10 +317,43 @@ function arrayToObject (keyArray, valueArray) {
  * @return {function} The function we passed in as the first param with the context set as the object
  *                     we passed in and the args we passed in as defaults.
  */
- function bind (functionToBind, objectToBindTo /* args */) {
-   // Get the addtional args the user has passed in as defaults for the fucntion.
-   var defaultArgs = Array.prototype.slice.call(arguments, 2);
-   // We will call the partial application function and pass it the function, the object to
-   // bind to and the additional arguments.
-   return partialApplication(functionToBind, objectToBindTo, defaultArgs);
- }
+function bind (functionToBind, objectToBindTo /* args */) {
+  // Get the addtional args the user has passed in as defaults for the fucntion.
+  var defaultArgs = Array.prototype.slice.call(arguments, 2);
+  // We will call the partial application function and pass it the function, the object to
+  // bind to and the additional arguments.
+  return partialApplication(functionToBind, objectToBindTo, defaultArgs);
+}
+
+/**
+ * Only allow a function to be called every certain number of seconds.  For example if we have 
+ * a button on the page and the user keeps pressing it, we will set a number of seconds between
+ * executions of the action.
+ * @param {object}    The function we want to throttle.
+ * @param {number}    The number of miliseconds we want to wait in between invocations.
+ * @return {function} A new throttled version of the function that will only be invoked once every
+ *                    number of seconds the user specifies.
+ */
+function throttle (functionToThrottle, delay /* args */) {
+  // we will return a function that will keep track of the last time it was invoked
+  // and if that difference is less than the delay it will not fire again.
+  var startTimer,
+      argumentsArray = toArray(arguments);
+  return function () {
+    // First we will turn the arguments into an array
+    var functionToThrottleArguments = (argumentsArray.length > 2) ? argumentsArray.slice(2) : [];
+    
+    // Now we will see if the current date - startTimer > delay, if it is we will call the function
+    // to throttle, if not we will not call it.
+    var newTime = Date.now();
+    // The first time the function is called startTimer will be undefined
+    // so allow that to fire and if the delay has passed since the last invocation.
+    if (!startTimer || (newTime - startTimer > delay)) {
+      // Call the function
+      functionToThrottle.apply(null, functionToThrottleArguments);
+      // reset the timer
+      startTimer = newTime;
+    }
+      
+  }
+}
