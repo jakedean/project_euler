@@ -14,7 +14,7 @@
    * on each element in the array.
    * @param {array}    inputObject    The array of elements we want to iterate over
    * @param {function} functionToCall The function we want to call on the current element
-   **/
+   */
   function each (inputObject, functionToCall) { 
     // We will loop through the input array and call the function each time thorugh
     for (var index in inputObject) {
